@@ -11,6 +11,7 @@ class Grid:
     border_punishment: int = -1
     obstacle_punishment: int = -1
     goal_reward: int = 1
+    __current_state: Tuple[int, int] = (0, 0)
 
     def init_grid(self) -> np.ndarray:
         # generate random grid
@@ -48,18 +49,33 @@ class Grid:
             raise ValueError("Invalid action")
         
         if action == "up":
-            pass
+            if self.__current_state[0] == 0:
+                return self.__current_state, self.border_punishment, False
+            else:
+                self.__current_state = (self.__current_state[0] - 1, self.__current_state[1])
         elif action == "down":
-            pass
+            if self.__current_state[0] == self.height - 1:
+                return self.__current_state, self.border_punishment, False
+            else:
+                self.__current_state = (self.__current_state[0] + 1, self.__current_state[1])
         elif action == "left":
-            pass
+            if self.__current_state[1] == 0:
+                return self.__current_state, self.border_punishment, False
+            else:
+                self.__current_state = (self.__current_state[0], self.__current_state[1] - 1)
         elif action == "right":
-            pass
+            if self.__current_state[1] == self.width - 1:
+                return self.__current_state, self.border_punishment, False
+            else:
+                self.__current_state = (self.__current_state[0], self.__current_state[1] + 1)
         elif action == "stay":
             pass
         else:
             raise ValueError("Invalid action")
-        
-        return (0, 0), 0, False
+        if self.grid[self.__current_state[0]][self.__current_state[1]] == 1:
+            return self.__current_state, self.obstacle_punishment, False
+        elif self.grid[self.__current_state[0]][self.__current_state[1]] == 2:
+            return self.__current_state, self.goal_reward, True
+        return self.__current_state, 0, False
 
        
